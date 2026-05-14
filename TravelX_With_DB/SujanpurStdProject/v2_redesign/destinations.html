@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Wizard Steps Specific Styles */
+        .step-container { display: none; animation: slideUp 0.3s ease; }
+        .step-container.active { display: block; }
+        
+        .wizard-progress { display: flex; justify-content: space-between; margin-bottom: 20px; padding: 0 10px; position: relative; }
+        .wizard-progress::before {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+            background: var(--glass-border); z-index: 1; transform: translateY(-50%);
+        }
+        .step-dot {
+            width: 30px; height: 30px; border-radius: 50%; background: var(--bg-dark);
+            border: 2px solid var(--glass-border); color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            z-index: 2; position: relative; transition: var(--transition);
+        }
+        .step-dot.active { background: var(--primary); border-color: var(--primary); color: var(--bg-darker); }
+        .step-dot.completed { background: var(--secondary); border-color: var(--secondary); color: var(--bg-darker); }
+
+        .hotel-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
+        .hotel-card {
+            display: flex; gap: 15px; background: rgba(0,0,0,0.2); border: 2px solid var(--glass-border);
+            border-radius: 12px; padding: 10px; cursor: pointer; transition: var(--transition);
+        }
+        .hotel-card:hover { border-color: rgba(0, 212, 255, 0.4); }
+        .hotel-card.selected { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
+        .hotel-img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; }
+        
+        .addon-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 12px; margin-bottom: 15px;
+        }
+        .addon-item label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500;}
+        .addon-price { color: var(--secondary); font-weight: bold; }
+        
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-muted); font-size: 0.95rem; }
+        .bill-row strong { color: #fff; }
+        .bill-total { border-top: 1px solid var(--glass-border); padding-top: 15px; margin-top: 15px; font-size: 1.25rem; font-weight: bold; color: var(--secondary); display: flex; justify-content: space-between; }
+
+        /* Modal Visibility System Fix */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.3s ease; z-index: 1000;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content {
+            background: #0f172a; border: 1px solid var(--glass-border);
+            width: 90%; max-width: 500px; border-radius: 16px; padding: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(20px); transition: 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .close-modal:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html" class="active">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">Featured Destinations</h1>
+        <p class="page-subtitle">Amazing places to visit, from pristine beaches to majestic mountains.</p>
+    </div>
+
+    <div class="grid" id="destinationsGrid">
+        <!-- Rendered via JS -->
+    </div>
+
+    <!-- Multi-Step Booking Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalPlaceName">Book Trip</h2>
+                <button class="close-modal" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="form-section">
+                <!-- Progress Indicator -->
+                <div class="wizard-progress">
+                    <div class="step-dot active" id="dot1">1</div>
+                    <div class="step-dot" id="dot2">2</div>
+                    <div class="step-dot" id="dot3">3</div>
+                    <div class="step-dot" id="dot4">4</div>
+                </div>
+
+                <!-- STEP 1: Destination Info & Dates -->
+                <div class="step-container active" id="step1">
+                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                        <img id="modalPlaceImage" src="" alt="Place" style="width: 120px; height: 100px; border-radius: 12px; object-fit: cover;">
+                        <div>
+                            <div id="modalPlaceLocation" style="color: var(--text-muted); margin-bottom: 5px;">📍 Location</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Base Travel Package (Flights & Entry):</div>
+                            <div id="modalPrice" style="color: var(--primary); font-weight: 700; font-size: 1.2rem;">₹0 / person</div>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Travelers</label>
+                            <select class="input-control" id="travelers" onchange="calculateDraftTotal()">
+                                <option value="1">1 Person</option>
+                                <option value="2" selected>2 People</option>
+                                <option value="3">3 People</option>
+                                <option value="4">4 People</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Check-in</label>
+                            <input type="date" class="input-control" id="checkInDate" required onchange="calculateDraftTotal()">
+                        </div>
+                        <div class="input-group">
+                            <label>Check-out</label>
+                            <input type="date" class="input-control" id="checkOutDate" required onchange="calculateDraftTotal()">
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-bottom: 20px; font-weight: bold; color: var(--secondary);">
+                        Base Selection: <span id="s1Total">₹0</span>
+                    </div>
+                    <button class="btn btn-primary w-full" onclick="nextStep(2)">Proceed to Select Hotel</button>
+                </div>
+
+                <!-- STEP 2: Hotel Selection -->
+                <div class="step-container" id="step2">
+                    <h3 style="margin-bottom: 10px;">Select Nearest Accommodation</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Prices shown are per night.</p>
+                    
+                    <div class="hotel-grid" id="hotelGridContainer">
+                        <!-- Hotels dynamically injected here -->
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-outline" style="flex: 1;" onclick="prevStep(1)">Back</button>
+                        <button class="btn btn-primary" style="flex: 2;" onclick="nextStep(3)" id="btnStep2Next" disabled>Add Extras ➔</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Addons & Food -->
+                <div class="step-container" id="step3">
+                    <h3 style="margin-bottom: 20px;">Enhance Your Stay</h3>
+                    
+                    <div class="addon-item">
+                        <label><input type="checkbox" id="addonFood" value="3500" onchange="calculateDraftTotal()"> 🥘 All-Inclusive Dining Pack (Breakfast + Dinner)</label>
+                        <div class="addon-price">+₹3,500 <span style="font-size: 0.8rem; font-weight:normal; color: var(--text-muted);">/ person / day</span></div>
+                    </div>
+                    
+                    <div class="addon-item">
+                        <label><input type="checkbox" id="addonCab" value="5000" onchange="calculateDraftTotal()"> 🚙 Dedicated City Guide & CAB</label>
+                        <div class="addon-price">+₹5,000 <span style="font-size: 0.8rem; font-weight:normal; color: var(--text-muted);">/ trip</span></div>
+                    </div>
+
+                    <div class="addon-item">
+                        <label><input type="checkbox" id="addonTransfer" value="2000" onchange="calculateDraftTotal()"> ✈️ Premium Airport Transfer</label>
+                        <div class="addon-price">+₹2,000 <span style="font-size: 0.8rem; font-weight:normal; color: var(--text-muted);">/ trip</span></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-outline" style="flex: 1;" onclick="prevStep(2)">Back</button>
+                        <button class="btn btn-primary" style="flex: 2;" onclick="nextStep(4)">Review & Secure Booking ➔</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Checkout & Bill -->
+                <div class="step-container" id="step4">
+                    <h3 style="margin-bottom: 20px;">Combined Itinerary Bill</h3>
+                    
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <div class="bill-row"><span>Base Package (<span id="bTravelers"></span> persons):</span> <strong id="bBaseTotal"></strong></div>
+                        <div class="bill-row"><span>Accommodations (<span id="bNights"></span> nights):</span> <strong id="bHotelTotal"></strong></div>
+                        <div class="bill-row"><span>Selected Addons:</span> <strong id="bAddonTotal"></strong></div>
+                        <div class="bill-row" style="margin-top: 8px;"><span><small style="color:var(--text-muted)" id="bHotelName"></small></span></div>
+                        <div class="bill-total">
+                            <span>Total Payable:</span>
+                            <span id="bFinalTotal"></span>
+                        </div>
+                    </div>
+
+                    <form onsubmit="finalizeBooking(event)">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Full Name</label>
+                                <input type="text" class="input-control" id="fullName" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Email Address</label>
+                                <input type="email" class="input-control" id="email" required>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="prevStep(3)">Back</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 1.1rem;">Pay & Confirm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        // FULL HOTEL DATA INJECTED
+        const locationHotels = {
+            maldives: {
+                hotels: [
+                    { id: 'm1', name: 'Soneva Fushi Resort', image: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400', price: 45000, stars: '⭐⭐⭐⭐⭐', details: 'Overwater bungalows & private pools' },
+                    { id: 'm2', name: 'Centara Grand Island', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400', price: 25000, stars: '⭐⭐⭐⭐', details: 'Beachfront luxury resort' }
+                ]
+            },
+            mumbai: {
+                hotels: [
+                    { id: 'mu1', name: 'Taj Mahal Palace', image: 'https://images.unsplash.com/photo-1566438480900-0609be27a4be?w=400', price: 22000, stars: '⭐⭐⭐⭐⭐', details: 'Iconic heritage hotel by Gateway of India' },
+                    { id: 'mu2', name: 'Trident Nariman Point', image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400', price: 15000, stars: '⭐⭐⭐⭐', details: 'Panoramic ocean views' }
+                ]
+            },
+            tokyo: {
+                hotels: [
+                    { id: 't1', name: 'Aman Tokyo', image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400', price: 30000, stars: '⭐⭐⭐⭐⭐', details: 'Urban luxury high above the city' },
+                    { id: 't2', name: 'Shinjuku Prince Hotel', image: 'https://images.unsplash.com/photo-1522616239103-dc5567b43343?w=400', price: 12000, stars: '⭐⭐⭐⭐', details: 'Heart of Tokyo entertainment district' }
+                ]
+            },
+            bengaluru: {
+                hotels: [
+                    { id: 'b1', name: 'The Leela Palace', image: 'https://images.unsplash.com/photo-1618221195710-dd1d7e47f25d?w=400', price: 18000, stars: '⭐⭐⭐⭐⭐', details: 'Royal Indian architecture and gardens' },
+                    { id: 'b2', name: 'ITC Gardenia', image: 'https://images.unsplash.com/photo-1558603915-fc1fa47848c4?w=400', price: 14000, stars: '⭐⭐⭐⭐⭐', details: 'Eco-luxury near Cubbon Park' }
+                ]
+            },
+            bali: {
+                hotels: [
+                    { id: 'ba1', name: 'Viceroy Bali', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400', price: 28000, stars: '⭐⭐⭐⭐⭐', details: 'Jungle villas with infinity pools' },
+                    { id: 'ba2', name: 'Hard Rock Hotel', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400', price: 11000, stars: '⭐⭐⭐⭐', details: 'Kuta beach massive resort' }
+                ]
+            },
+            shimla: {
+                hotels: [
+                    { id: 's1', name: 'Wildflower Hall', image: 'https://images.unsplash.com/photo-1551524164-748fe2e1e17d?w=400', price: 20000, stars: '⭐⭐⭐⭐⭐', details: 'Himalayan luxury resort in the pines' },
+                    { id: 's2', name: 'The Oberoi Cecil', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de23?w=400', price: 14000, stars: '⭐⭐⭐⭐⭐', details: 'Heritage grand hotel' }
+                ]
+            },
+            swissalps: {
+                hotels: [
+                    { id: 'sa1', name: 'Badrutt Palace', image: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400', price: 55000, stars: '⭐⭐⭐⭐⭐', details: 'Legendary ski resort castle' },
+                    { id: 'sa2', name: 'The Chedi', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400', price: 42000, stars: '⭐⭐⭐⭐⭐', details: 'Refined Alpine wellness hotel' }
+                ]
+            },
+            paris: {
+                hotels: [
+                    { id: 'p1', name: 'Ritz Paris', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400', price: 65000, stars: '⭐⭐⭐⭐⭐', details: 'Ultimate Parisian luxury and history' },
+                    { id: 'p2', name: 'Pullman Tour Eiffel', image: 'https://images.unsplash.com/photo-1502602898657-3e907a5ea82c?w=400', price: 22000, stars: '⭐⭐⭐⭐', details: 'Stunning Eiffel Tower views' }
+                ]
+            },
+            santorini: {
+                hotels: [
+                    { id: 'g1', name: 'Canaves Oia', image: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac542?w=400', price: 35000, stars: '⭐⭐⭐⭐⭐', details: 'Classic white cliffside luxury suites' }
+                ]
+            },
+            dubai: {
+                hotels: [
+                    { id: 'd1', name: 'Burj Al Arab', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400', price: 85000, stars: '⭐⭐⭐⭐⭐⭐', details: 'Iconic 7-star sail-shaped luxury' },
+                    { id: 'd2', name: 'Atlantis The Palm', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400', price: 32000, stars: '⭐⭐⭐⭐⭐', details: 'Massive resort with water parks' }
+                ]
+            },
+            sydney: {
+                hotels: [
+                    { id: 'sy1', name: 'Park Hyatt Sydney', image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400', price: 38000, stars: '⭐⭐⭐⭐⭐', details: 'Clear views of the Opera House' }
+                ]
+            },
+            capetown: {
+                hotels: [
+                    { id: 'c1', name: 'One&Only Cape Town', image: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400', price: 25000, stars: '⭐⭐⭐⭐⭐', details: 'V&A Waterfront resort' }
+                ]
+            },
+            rio: {
+                hotels: [
+                    { id: 'r1', name: 'Copacabana Palace', image: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=400', price: 21000, stars: '⭐⭐⭐⭐⭐', details: 'Historic art deco beachfront hotel' }
+                ]
+            },
+            default: {
+                hotels: [
+                    { id: 'gen1', name: 'Premium Resort & Spa', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400', price: 12000, stars: '⭐⭐⭐⭐⭐', details: 'Top rated inclusive luxury stay' },
+                    { id: 'gen2', name: 'Comfort City Inn', image: 'https://images.unsplash.com/photo-1551524164-748fe2e1e17d?w=400', price: 6500, stars: '⭐⭐⭐⭐', details: 'Perfect base for exploring' }
+                ]
+            }
+        };
+        let destinationData = {};
+
+        function makeFallbackImage(label) {
+            const safeLabel = encodeURIComponent(label || 'TravelX');
+            return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 520'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%230ea5e9'/><stop offset='100%' stop-color='%23022c43'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Segoe UI, Arial, sans-serif' font-size='48' font-weight='700'>${safeLabel}</text></svg>`;
+        }
+
+        function attachImageFallback(img, label) {
+            if (!img || img.dataset.fallbackAttached === '1') return;
+            img.dataset.fallbackAttached = '1';
+            img.addEventListener('error', () => {
+                img.src = makeFallbackImage(label);
+            }, { once: true });
+
+            if (img.complete && img.naturalWidth === 0) {
+                img.src = makeFallbackImage(label);
+            }
+        }
+
+        const grid = document.getElementById('destinationsGrid');
+
+        async function loadDestinations() {
+            grid.innerHTML = '<p style="color: var(--text-muted);">Loading destinations...</p>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/destinations`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success || !Array.isArray(data.destinations)) {
+                    throw new Error(data.message || 'Failed to load destinations');
+                }
+
+                destinationData = {};
+                data.destinations.forEach((dest) => {
+                    destinationData[dest.destinationKey] = {
+                        id: dest.destinationKey,
+                        name: dest.name,
+                        location: `📍 ${dest.location}`,
+                        price: Number(dest.price),
+                        image: dest.imageUrl,
+                        rating: dest.rating,
+                        desc: dest.description,
+                    };
+                });
+
+                const destinations = Object.values(destinationData);
+                if (destinations.length === 0) {
+                    grid.innerHTML = '<p style="color: var(--text-muted);">No active destinations available right now.</p>';
+                    return;
+                }
+
+                grid.innerHTML = destinations.map((dest) => `
+                    <div class="item-card">
+                        <div class="item-image">
+                            <img src="${dest.image}" alt="${dest.name}" data-label="${dest.name}">
+                            <div class="tag price">₹${(dest.price * 80).toLocaleString('en-IN')}</div>
+                        </div>
+                        <div class="item-content">
+                            <h3 class="item-title">${dest.name}</h3>
+                            <div class="item-location">${dest.location}</div>
+                            <div class="item-rating">
+                                <span class="star">★</span><span class="rating-num">${dest.rating}</span>
+                            </div>
+                            <p class="item-desc">${dest.desc}</p>
+                            <button class="btn btn-outline w-full pt-15" onclick="openWizard('${dest.id}')">Build Itinerary</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('#destinationsGrid .item-image img').forEach((img) => {
+                    attachImageFallback(img, img.dataset.label || img.alt || 'Destination');
+                });
+            } catch (error) {
+                grid.innerHTML = `<p style="color: #fda4af;">${error.message}</p>`;
+            }
+        }
+
+        loadDestinations();
+
+        // Global State
+        let currentDest = null;
+        let selectedHotel = null;
+        let finalBookingMath = {};
+
+        function openWizard(destId) {
+            currentDest = destinationData[destId];
+            if (!currentDest) return;
+            
+            // Reset Wizard
+            selectedHotel = null;
+            document.getElementById('addonFood').checked = false;
+            document.getElementById('addonCab').checked = false;
+            document.getElementById('addonTransfer').checked = false;
+            
+            // Setup Step 1 Data
+            document.getElementById('modalPlaceName').textContent = "Build " + currentDest.name + " Trip";
+            document.getElementById('modalPlaceLocation').textContent = currentDest.location;
+            document.getElementById('modalPrice').textContent = '₹' + (currentDest.price * 80).toLocaleString('en-IN') + ' / person';
+            const modalImage = document.getElementById('modalPlaceImage');
+            attachImageFallback(modalImage, currentDest.name);
+            modalImage.src = currentDest.image;
+            
+            const today = new Date();
+            const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+            document.getElementById('checkInDate').value = today.toISOString().split('T')[0];
+            document.getElementById('checkOutDate').value = tomorrow.toISOString().split('T')[0];
+            
+            loadHotels(destId);
+            goToStep(1);
+            calculateDraftTotal();
+
+            document.getElementById('detailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Progression Logic
+        function goToStep(num) {
+            document.querySelectorAll('.step-container').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + num).classList.add('active');
+            
+            // Update dots
+            for(let i=1; i<=4; i++) {
+                const dot = document.getElementById('dot' + i);
+                dot.classList.remove('active', 'completed');
+                if (i < num) dot.classList.add('completed');
+                else if (i === num) dot.classList.add('active');
+            }
+            
+            if (num === 4) renderFinalBill();
+        }
+        function nextStep(num) { goToStep(num); }
+        function prevStep(num) { goToStep(num); }
+
+        function calculateDraftTotal() {
+            if(!currentDest) return;
+            const travelers = parseInt(document.getElementById('travelers').value) || 1;
+            document.getElementById('s1Total').textContent = '₹' + (currentDest.price * 80 * travelers).toLocaleString('en-IN');
+        }
+
+        // Step 2: Hotel Logic
+        function loadHotels(destId) {
+            const hotelsData = locationHotels[destId] || locationHotels['default'];
+            const container = document.getElementById('hotelGridContainer');
+            container.innerHTML = '';
+            
+            hotelsData.hotels.forEach(hotel => {
+                const isSelected = selectedHotel && selectedHotel.id === hotel.id;
+                container.innerHTML += `
+                    <div class="hotel-card ${isSelected ? 'selected' : ''}" onclick="selectHotel('${hotel.id}', '${destId}')" id="card-${hotel.id}">
+                        <img src="${hotel.image}" class="hotel-img" alt="${hotel.name}" data-label="${hotel.name}">
+                        <div>
+                            <div style="font-weight: 600; color: #fff; margin-bottom: 5px;">${hotel.name}</div>
+                            <div style="color: var(--secondary); font-weight: bold; margin-bottom: 5px;">₹${hotel.price.toLocaleString('en-IN')} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/ night</span></div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">${hotel.stars} • ${hotel.details}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.querySelectorAll('.hotel-img').forEach((img) => {
+                attachImageFallback(img, img.dataset.label || img.alt || 'Hotel');
+            });
+        }
+
+        function selectHotel(hotelId, destId) {
+            const hotelsData = locationHotels[destId] || locationHotels['default'];
+            selectedHotel = hotelsData.hotels.find(h => h.id === hotelId);
+            loadHotels(destId); // re-render to attach 'selected' class
+            document.getElementById('btnStep2Next').removeAttribute('disabled');
+        }
+
+        // Step 4: Generate Bill
+        function renderFinalBill() {
+            const travelers = parseInt(document.getElementById('travelers').value) || 1;
+            const inD = new Date(document.getElementById('checkInDate').value);
+            const outD = new Date(document.getElementById('checkOutDate').value);
+            let nights = Math.max(1, Math.ceil((outD - inD) / (1000 * 60 * 60 * 24)));
+
+            // Math computations
+            const baseAmount = currentDest.price * 80 * travelers;
+            const hotelAmount = selectedHotel ? selectedHotel.price * nights : 0;
+            
+            let addonAmnt = 0;
+            if(document.getElementById('addonFood').checked) addonAmnt += 3500 * travelers * nights;
+            if(document.getElementById('addonCab').checked) addonAmnt += 5000;
+            if(document.getElementById('addonTransfer').checked) addonAmnt += 2000;
+
+            const finalTotal = baseAmount + hotelAmount + addonAmnt;
+
+            // Render Output
+            document.getElementById('bTravelers').textContent = travelers;
+            document.getElementById('bNights').textContent = nights;
+            
+            document.getElementById('bBaseTotal').textContent = '₹' + baseAmount.toLocaleString('en-IN');
+            document.getElementById('bHotelTotal').textContent = '₹' + hotelAmount.toLocaleString('en-IN');
+            document.getElementById('bHotelName').textContent = selectedHotel ? selectedHotel.name : 'No Hotel Selected';
+            document.getElementById('bAddonTotal').textContent = '₹' + addonAmnt.toLocaleString('en-IN');
+            document.getElementById('bFinalTotal').textContent = '₹' + finalTotal.toLocaleString('en-IN');
+
+            // Save state for submission
+            finalBookingMath = {
+                destName: currentDest.name,
+                travelers, nights, baseAmount, hotelAmount, addonAmnt, finalTotal,
+                hotelName: selectedHotel ? selectedHotel.name : 'N/A'
+            };
+        }
+
+        async function finalizeBooking(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = 'Processing...'; btn.disabled = true;
+
+            const user = getStoredUser();
+            if (!user) {
+                alert('Please login first to save your booking.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const bookingData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                destination: finalBookingMath.destName,
+                guests: finalBookingMath.travelers,
+                checkIn: document.getElementById('checkInDate').value,
+                checkOut: document.getElementById('checkOutDate').value,
+                roomType: finalBookingMath.hotelName, // hijacking existing itinerary key
+                total: '₹' + finalBookingMath.finalTotal.toLocaleString('en-IN'),
+                addons: finalBookingMath.addonAmnt, // extra stat
+                baseCost: finalBookingMath.baseAmount // extra stat
+            };
+
+            const payload = {
+                destination: finalBookingMath.destName,
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: user.phone || '9999999999',
+                guests: String(finalBookingMath.travelers),
+                checkIn: document.getElementById('checkInDate').value,
+                checkOut: document.getElementById('checkOutDate').value,
+                roomType: finalBookingMath.hotelName,
+                pricePerNight: selectedHotel ? selectedHotel.price : 0,
+                totalPrice: finalBookingMath.finalTotal,
+            };
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Could not save booking to server');
+                }
+
+                localStorage.setItem('latestBooking', JSON.stringify(bookingData));
+                window.location.href = 'itinerary.html';
+            } catch (error) {
+                alert(`Booking failed: ${error.message}`);
+                btn.innerHTML = 'Pay & Confirm';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

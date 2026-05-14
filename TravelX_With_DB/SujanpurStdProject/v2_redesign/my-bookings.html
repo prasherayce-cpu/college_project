@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .bookings-container {
+            max-width: 1100px;
+            margin: 30px auto 70px;
+            padding: 0 20px;
+        }
+
+        .bookings-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .booking-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .booking-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+        }
+
+        .booking-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin: 0;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .status-confirmed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.45);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.45);
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .booking-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .booking-label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .booking-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 50px 20px;
+            color: var(--text-muted);
+        }
+
+        .error-state {
+            color: #fecaca;
+            text-align: center;
+            padding: 14px;
+            background: rgba(127, 29, 29, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">My Bookings</h1>
+        <p class="page-subtitle">Your recent and upcoming trips in one place.</p>
+    </div>
+
+    <main class="bookings-container">
+        <div id="bookingsError" class="error-state" style="display: none;"></div>
+        <div id="bookingsList" class="bookings-list"></div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatDate(isoDate) {
+            if (!isoDate) return '-';
+            const date = new Date(isoDate);
+            if (Number.isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
+
+        function statusClass(status) {
+            const key = (status || '').toLowerCase();
+            if (key === 'confirmed') return 'status-confirmed';
+            if (key === 'cancelled') return 'status-cancelled';
+            return 'status-pending';
+        }
+
+        function renderBookings(bookings) {
+            const list = document.getElementById('bookingsList');
+            if (!bookings || bookings.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="margin-top: 0; color: #fff;">No bookings yet</h3>
+                        <p style="margin-bottom: 20px;">You have not made any bookings yet.</p>
+                        <a href="booking.html" class="btn btn-primary">Book Your First Trip</a>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = bookings.map((booking) => `
+                <article class="booking-card">
+                    <div class="booking-head">
+                        <h2 class="booking-title">${escapeHtml(booking.destination)}</h2>
+                        <span class="status-pill ${statusClass(booking.status)}">${escapeHtml(booking.status)}</span>
+                    </div>
+
+                    <div class="booking-grid">
+                        <div class="booking-item">
+                            <span class="booking-label">Booking ID</span>
+                            <span class="booking-value">#${escapeHtml(booking.id)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Guest Name</span>
+                            <span class="booking-value">${escapeHtml(booking.full_name)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Room Type</span>
+                            <span class="booking-value">${escapeHtml(booking.room_type)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Guests</span>
+                            <span class="booking-value">${escapeHtml(booking.number_of_people)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Check-in</span>
+                            <span class="booking-value">${formatDate(booking.start_date)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Check-out</span>
+                            <span class="booking-value">${formatDate(booking.end_date)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Nights</span>
+                            <span class="booking-value">${escapeHtml(booking.nights)}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Total Price</span>
+                            <span class="booking-value">₹${Number(booking.total_price || 0).toLocaleString('en-IN')}</span>
+                        </div>
+                        <div class="booking-item">
+                            <span class="booking-label">Booked On</span>
+                            <span class="booking-value">${formatDate(booking.created_at)}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        async function loadBookings() {
+            const errorBox = document.getElementById('bookingsError');
+            errorBox.style.display = 'none';
+            errorBox.textContent = '';
+
+            const user = getStoredUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/bookings/my`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to load bookings');
+                }
+
+                renderBookings(data.bookings);
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.style.display = 'block';
+                renderBookings([]);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBookings);
+    </script>
+</body>
+</html>

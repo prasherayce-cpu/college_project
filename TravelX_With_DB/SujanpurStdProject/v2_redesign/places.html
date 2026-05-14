@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            display: flex;
+            gap: 15px;
+            padding: 0 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: #fff;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0,0,0,0.4);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html" class="active">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">Explore Beautiful Places</h1>
+        <p class="page-subtitle">Discover amazing monuments, temples, beaches, and historic landmarks.</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search places (e.g., Taj Mahal)...">
+        <button class="btn btn-primary" id="searchBtn">Search</button>
+    </div>
+
+    <div class="grid" id="placesGrid">
+        <!-- Taj Mahal -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400" alt="Taj Mahal">
+                <div class="tag">Monument</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Taj Mahal</h3>
+                <div class="item-location">📍 Agra, India</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(10,234 reviews)</span>
+                </div>
+                <p class="item-desc">A stunning marble mausoleum and one of the Seven Wonders of the World.</p>
+                <a href="booking.html?place=tajmahal" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Vaishno Devi Temple -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://img.veenaworld.com/wp-content/uploads/2020/06/Vaishno-Devi.jpg" alt="Vaishno Devi Temple">
+                <div class="tag">Temple</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Vaishno Devi Temple</h3>
+                <div class="item-location">📍 Katra, Jammu & Kashmir</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(15,678 reviews)</span>
+                </div>
+                <p class="item-desc">One of the most revered Hindu temples dedicated to goddess Vaishno Devi.</p>
+                <a href="booking.html?place=vaishnodevi" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Golden Temple -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://www.savaari.com/blog/wp-content/uploads/2023/08/golden_temple_in_amritsar1.webp" alt="Golden Temple">
+                <div class="tag">Temple</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Golden Temple</h3>
+                <div class="item-location">📍 Amritsar, Punjab</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(25,432 reviews)</span>
+                </div>
+                <p class="item-desc">The holiest Sikh gurdwara with stunning golden architecture and spiritual ambience.</p>
+                <a href="booking.html?place=goldentemple" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+        
+        <!-- Meenakshi Temple -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://i.pinimg.com/originals/12/39/69/1239696ae161a536d6f422e5dc42122a.jpg" alt="Meenakshi Temple">
+                <div class="tag">Temple</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Meenakshi Temple</h3>
+                <div class="item-location">📍 Madurai, Tamil Nadu</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.8</span>
+                    <span class="review-count">(9,876 reviews)</span>
+                </div>
+                <p class="item-desc">Historic Hindu temple with stunning Dravidian architecture and 14 gopurams.</p>
+                <a href="booking.html?place=meenakshi" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Hawa Mahal -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?w=400" alt="Hawa Mahal">
+                <div class="tag">Monument</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Hawa Mahal</h3>
+                <div class="item-location">📍 Jaipur, Rajasthan</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.7</span>
+                    <span class="review-count">(8,543 reviews)</span>
+                </div>
+                <p class="item-desc">The Palace of Winds, an iconic royal architectural marvel made of pink sandstone.</p>
+                <a href="booking.html?place=hawamahal" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Venice Canals -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=400" alt="Venice Canals">
+                <div class="tag">Landmark</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Venice Canals</h3>
+                <div class="item-location">📍 Venice, Italy</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.8</span>
+                    <span class="review-count">(11,200 reviews)</span>
+                </div>
+                <p class="item-desc">Ride a gondola through the iconic network of romantic canals.</p>
+                <a href="booking.html?place=venicecanals" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Grand Canyon -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?w=400" alt="Grand Canyon">
+                <div class="tag">Nature</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Grand Canyon</h3>
+                <div class="item-location">📍 Arizona, USA</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(18,900 reviews)</span>
+                </div>
+                <p class="item-desc">A natural wonder showcasing immense geological beauty and massive colorful rock bands.</p>
+                <a href="booking.html?place=grandcanyon" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+
+        <!-- Machu Picchu -->
+        <div class="item-card place-item">
+            <div class="item-image">
+                <img src="https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400" alt="Machu Picchu">
+                <div class="tag">Historic</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Machu Picchu</h3>
+                <div class="item-location">📍 Cusco Region, Peru</div>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(14,500 reviews)</span>
+                </div>
+                <p class="item-desc">The famous 15th-century Inca citadel situated on a mountain ridge above the Sacred Valley.</p>
+                <a href="booking.html?place=machupicchu" class="btn btn-outline w-full pt-15">Book Package</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const cards = document.querySelectorAll('.place-item');
+
+        const doSearch = () => {
+            const query = searchInput.value.toLowerCase();
+            cards.forEach(card => {
+                const title = card.querySelector('.item-title').textContent.toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        searchBtn.addEventListener('click', doSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if(e.key === 'Enter') doSearch();
+        });
+    </script>
+</body>
+</html>

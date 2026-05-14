@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .about-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+        .about-hero { text-align: center; margin-bottom: 50px; }
+        .about-content { display: flex; gap: 40px; align-items: center; }
+        .about-text { flex: 1; font-size: 1.1rem; line-height: 1.8; color: var(--text-muted); }
+        .about-image { flex: 1; border-radius: 20px; overflow: hidden; }
+        .about-image img { width: 100%; height: auto; object-fit: cover; }
+        
+        @media (max-width: 768px) {
+            .about-content { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html" class="active">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="about-container">
+        <div class="about-hero">
+            <h1 class="page-title">Who We Are</h1>
+            <p class="page-subtitle">Pioneering the future of seamless travel experiences.</p>
+        </div>
+
+        <div class="about-content">
+            <div class="about-text">
+                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.8rem; font-family: 'Outfit', sans-serif;">Our Mission at TravelX Hub</h3>
+                <p style="margin-bottom: 20px;">We believe travel should be more than just visiting a destination; it should be an unforgettable, seamless journey. From exploring majestic monuments to resting on tropical beaches, we ensure every detail of your booking is crafted with care and premium service.</p>
+                <p>Founded in 2026, TravelX Hub aims to unite modern aesthetic design with flawlessly fast bookings, removing the friction from itinerary planning. Let us take care of the details while you enjoy the adventure.</p>
+                
+                <h3 style="color: #fff; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; font-family: 'Outfit', sans-serif;">Why Choose Us?</h3>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><span style="color: var(--primary); font-size: 1.2rem;">✔</span> <strong>Curated Destinations:</strong> Only the most beautiful spots globally.</li>
+                    <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><span style="color: var(--primary); font-size: 1.2rem;">✔</span> <strong>Seamless Bookings:</strong> Book safely in under two minutes with instant confirmation.</li>
+                    <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><span style="color: var(--primary); font-size: 1.2rem;">✔</span> <strong>24/7 Support:</strong> Our global team is always awake and ready to help.</li>
+                </ul>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=600" alt="Team traveling" style="border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.5);">
+                
+                <div style="margin-top: 30px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h4 style="color: #fff; margin-bottom: 15px; font-family: 'Outfit', sans-serif;">Meet the Founders</h4>
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100" alt="CEO" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <div style="color: #fff; font-weight: 600;">Sarah Jenkins</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">CEO & Founder</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100" alt="CTO" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <div style="color: #fff; font-weight: 600;">Mark Davis</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">CTO & Co-Founder</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

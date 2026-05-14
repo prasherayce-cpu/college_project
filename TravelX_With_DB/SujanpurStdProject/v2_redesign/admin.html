@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - TravelX Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .admin-wrap {
+      max-width: 1200px;
+      margin: 40px auto 70px;
+      padding: 0 16px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .admin-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .admin-card h2 {
+      padding: 18px 20px;
+      margin: 0;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: 1.2rem;
+    }
+
+    .admin-body {
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.92rem;
+      color: #e5e7eb;
+      vertical-align: top;
+    }
+
+    th {
+      color: #93c5fd;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .badge-active {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-inactive {
+      color: #fb7185;
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+
+    .status-btn {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: transparent;
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 600;
+    }
+
+    .status-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .status-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .admin-header {
+      margin-bottom: 22px;
+    }
+
+    .admin-header h1 {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+    <div class="nav-links">
+      <a href="home.html">Home</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="admin.html" class="active">Admin Panel</a>
+    </div>
+    <div class="nav-auth" id="navAuth"></div>
+  </nav>
+
+  <div class="admin-wrap">
+    <div class="admin-header page-header" style="padding-top: 10px;">
+      <h1 class="page-title">Admin Panel</h1>
+      <p class="page-subtitle">Manage bookings and control active destinations for users.</p>
+    </div>
+
+    <div class="admin-grid">
+      <section class="admin-card">
+        <h2>Destination Visibility</h2>
+        <div class="admin-body">
+          <p class="muted" style="margin-top: 0;">Only active destinations appear on the destination page.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="destinationsTableBody">
+              <tr><td colspan="6" class="muted">Loading destinations...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2>All Bookings</h2>
+        <div class="admin-body">
+          <table>
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>User</th>
+                <th>Destination</th>
+                <th>Dates</th>
+                <th>People</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+              <tr><td colspan="7" class="muted">Loading bookings...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Travel<span>X</span> Hub</div>
+    <p>© 2026 TravelX Hub | All Rights Reserved</p>
+  </footer>
+
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    function getTokenHeaders() {
+      const token = localStorage.getItem('token');
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    }
+
+    async function ensureAdmin() {
+      let user = getStoredUser();
+      if (!user || !user.role) {
+        const profile = await checkAuth();
+        if (profile) {
+          user = profile;
+          setStoredUser(profile);
+        }
+      }
+
+      if (!user) {
+        alert('Please login first.');
+        window.location.href = 'login.html';
+        return false;
+      }
+
+      if (user.role !== 'admin') {
+        alert('Only admin users can access this page.');
+        window.location.href = 'home.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    function formatCurrency(value) {
+      return `₹${Number(value || 0).toLocaleString('en-IN')}`;
+    }
+
+    async function loadDestinationsForAdmin() {
+      const body = document.getElementById('destinationsTableBody');
+      try {
+        const response = await fetch(`${API_BASE_URL}/admin/destinations`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: getTokenHeaders(),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to load destinations');
+        }
+
+        if (!data.destinations.length) {
+          body.innerHTML = '<tr><td colspan="6" class="muted">No destinations found.</td></tr>';
+          return;
+        }
+
+        body.innerHTML = data.destinations.map((dest) => `
+          <tr>
+            <td>${dest.id}</td>
+            <td>${dest.name}</td>
+            <td>${dest.location}</td>
+            <td>${formatCurrency(dest.price * 80)}</td>
+            <td>
+              <span class="badge ${dest.isActive ? 'badge-active' : 'badge-inactive'}">
+                ${dest.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td>
+              <button class="status-btn" onclick="toggleDestinationStatus(${dest.id}, ${!dest.isActive}, this)">
+                Mark ${dest.isActive ? 'Inactive' : 'Active'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        body.innerHTML = `<tr><td colspan="6" class="muted">${error.message}</td></tr>`;
+      }
+    }
+
+    async function loadBookingsForAdmin() {
+      const body = document.getElementById('bookingsTableBody');
+      try {
+        const response = await fetch(`${API_BASE_URL}/admin/bookings`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: getTokenHeaders(),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to load bookings');
+        }
+
+        if (!data.bookings.length) {
+          body.innerHTML = '<tr><td colspan="7" class="muted">No bookings found.</td></tr>';
+          return;
+        }
+
+        body.innerHTML = data.bookings.map((booking) => `
+          <tr>
+            <td>#${booking.id}</td>
+            <td>${booking.userName || booking.fullName}<br><small class="muted">${booking.userEmail || booking.email}</small></td>
+            <td>${booking.destination}</td>
+            <td>${booking.startDate?.slice(0, 10)} to ${booking.endDate?.slice(0, 10)}</td>
+            <td>${booking.numberOfPeople}</td>
+            <td>${formatCurrency(booking.totalPrice)}</td>
+            <td>${booking.status}</td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        body.innerHTML = `<tr><td colspan="7" class="muted">${error.message}</td></tr>`;
+      }
+    }
+
+    async function toggleDestinationStatus(destinationId, isActive, buttonEl) {
+      buttonEl.disabled = true;
+      try {
+        const response = await fetch(`${API_BASE_URL}/admin/destinations/${destinationId}/status`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeaders(),
+          },
+          body: JSON.stringify({ isActive }),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to update status');
+        }
+
+        await loadDestinationsForAdmin();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        buttonEl.disabled = false;
+      }
+    }
+
+    (async function initAdminPanel() {
+      const allowed = await ensureAdmin();
+      if (!allowed) return;
+
+      await Promise.all([
+        loadDestinationsForAdmin(),
+        loadBookingsForAdmin(),
+      ]);
+    })();
+  </script>
+</body>
+</html>

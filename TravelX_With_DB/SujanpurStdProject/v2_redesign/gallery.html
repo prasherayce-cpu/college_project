@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .gallery-grid {
+            column-count: 3;
+            column-gap: 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: var(--hover-shadow);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 900px) { .gallery-grid { column-count: 2; } }
+        @media (max-width: 600px) { .gallery-grid { column-count: 1; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html" class="active">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">Travel Moments</h1>
+        <p class="page-subtitle">A glimpse into the stunning destinations our users have visited.</p>
+    </div>
+
+    <div class="gallery-grid">
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400" alt="Scenery"></div>
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400" alt="Scenery"></div>
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400" alt="Scenery"></div>
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400" alt="Scenery"></div>
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400" alt="Scenery"></div>
+        <div class="gallery-item"><img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400" alt="Scenery"></div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

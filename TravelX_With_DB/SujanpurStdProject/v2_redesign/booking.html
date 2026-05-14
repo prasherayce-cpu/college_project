@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Destination - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .booking-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .booking-summary-box {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .summary-title { margin-bottom: 15px; font-weight: 700; color: var(--primary); }
+        .summary-hr { border: 0; height: 1px; background: var(--glass-border); margin: 15px 0; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-muted); }
+        .summary-row.total { color: var(--secondary); font-size: 1.25rem; font-weight: bold; margin-top: 15px; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <div class="booking-container">
+        <div class="page-header" style="padding-top: 0;">
+            <h1 class="page-title" id="bookingTitle">Secure Your Booking</h1>
+            <p class="page-subtitle">Complete your details to finalize your travel itinerary.</p>
+        </div>
+
+        <form id="bookingForm">
+            <input type="hidden" id="destinationId">
+
+            <div class="input-row z-index-fix">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" class="input-control" id="fullName" required placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" class="input-control" id="email" required placeholder="john@example.com">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="input-control" id="phone" required placeholder="+1 234 567 8900">
+                </div>
+                <div class="input-group">
+                    <label>Number of Guests</label>
+                    <select class="input-control" id="guests">
+                        <option value="1">1 Guest</option>
+                        <option value="2" selected>2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4+ Guests</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Check-in Date</label>
+                    <input type="date" class="input-control" id="checkIn" required>
+                </div>
+                <div class="input-group">
+                    <label>Check-out Date</label>
+                    <input type="date" class="input-control" id="checkOut" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Room/Package Level</label>
+                <select class="input-control" id="roomType">
+                    <option value="12000">Standard (₹12,000/night)</option>
+                    <option value="20000" selected>Deluxe (₹20,000/night)</option>
+                    <option value="36000">Luxury Suite (₹36,000/night)</option>
+                </select>
+            </div>
+
+            <div class="booking-summary-box">
+                <div class="summary-title">Booking Overview</div>
+                <div class="summary-row">
+                    <span>Destination:</span>
+                    <strong style="color: #fff;" id="summaryDestination">Loading...</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Dates:</span>
+                    <span id="summaryDates">-</span>
+                </div>
+                <hr class="summary-hr">
+                <div class="summary-row total">
+                    <span>Estimated Total:</span>
+                    <span id="summaryPrice">₹0</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full" style="font-size: 1.1rem; padding: 16px;">Confirm Reservation Securely</button>
+        </form>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        // const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Get Place from Query Param
+        const params = new URLSearchParams(window.location.search);
+        const placeId = params.get('place') || 'Your Destination';
+        
+        const formatTitle = (str) => {
+            if (!str || str === 'Your Destination') return str;
+            return str.replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, match => match.toUpperCase())
+                      .replace(/-/g, ' ');
+        };
+        const displayPlace = formatTitle(placeId);
+
+        document.getElementById('bookingTitle').textContent = `Book ${displayPlace}`;
+        document.getElementById('summaryDestination').textContent = displayPlace;
+
+        // Auto dates
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const checkout = new Date(tomorrow);
+        checkout.setDate(checkout.getDate() + 3);
+
+        const formatDate = (date) => date.toISOString().split('T')[0];
+        
+        document.getElementById('checkIn').value = formatDate(tomorrow);
+        document.getElementById('checkIn').min = formatDate(today);
+        document.getElementById('checkOut').value = formatDate(checkout);
+        document.getElementById('checkOut').min = formatDate(tomorrow);
+
+        // Auto-fill from logged-in user and require authentication for booking
+        const loggedInUser = getStoredUser();
+        if (!loggedInUser) {
+            alert('Please login first to complete your booking.');
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('fullName').value = loggedInUser.name || '';
+            document.getElementById('email').value = loggedInUser.email || '';
+        }
+
+        function calculateBookingValues() {
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const pricePN = parseInt(document.getElementById('roomType').value);
+
+            if(checkIn && checkOut) {
+                document.getElementById('summaryDates').textContent = `${checkIn} to ${checkOut}`;
+                const diffTime = new Date(checkOut) - new Date(checkIn);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if(diffDays > 0) {
+                    const total = diffDays * pricePN;
+                    document.getElementById('summaryPrice').textContent = `₹${total.toLocaleString('en-IN')}`;
+                    return { nights: diffDays, pricePerNight: pricePN, total };
+                } else {
+                    document.getElementById('summaryPrice').textContent = "Invalid Dates";
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        // Update logic
+        function updatePricing() {
+            calculateBookingValues();
+        }
+
+        document.getElementById('checkIn').addEventListener('change', updatePricing);
+        document.getElementById('checkOut').addEventListener('change', updatePricing);
+        document.getElementById('roomType').addEventListener('change', updatePricing);
+        
+        updatePricing();
+
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.textContent = "Processing...";
+            btn.disabled = true;
+
+            const calculated = calculateBookingValues();
+            if (!calculated) {
+                alert('Please select valid check-in and check-out dates.');
+                btn.textContent = "Confirm Reservation Securely";
+                btn.disabled = false;
+                return;
+            }
+
+            const payload = {
+                destination: displayPlace,
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                guests: document.getElementById('guests').value,
+                checkIn: document.getElementById('checkIn').value,
+                checkOut: document.getElementById('checkOut').value,
+                roomType: document.getElementById('roomType').selectedOptions[0].textContent.split(' (')[0],
+                pricePerNight: calculated.pricePerNight,
+                totalPrice: calculated.total
+            };
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Booking failed');
+                }
+
+                alert(`Successfully booked ${displayPlace}! Booking ID: ${data.bookingId}`);
+                window.location.href = 'home.html';
+            } catch (error) {
+                alert(`Booking failed: ${error.message}`);
+                btn.textContent = "Confirm Reservation Securely";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

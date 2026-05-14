@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Home Page - TravelX Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .hero {
+            height: 90vh;
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 1)), 
+                        url('https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .hero-content h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .hero-content p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">Travel<span>X</span> Hub</a>
+        <div class="nav-links">
+            <a href="home.html" class="active">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="places.html">Places</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="navAuth"></div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Explore The World</h1>
+            <p>Discover breathtaking destinations and create unforgettable memories with TravelX Hub.</p>
+            <a href="destinations.html" class="btn btn-primary">Start Exploring</a>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h2 class="page-title">Popular Destinations</h2>
+        <p class="page-subtitle">Handpicked locations that travelers love right now</p>
+    </section>
+
+    <div class="grid">
+        <!-- Maldives -->
+        <div class="item-card">
+            <div class="item-image">
+                <img src="https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg" alt="Maldives">
+                <div class="tag">Tropical</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Maldives</h3>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.9</span>
+                    <span class="review-count">(2,456 reviews)</span>
+                </div>
+                <p class="item-desc">Crystal clear waters and pristine beaches that offer unparalleled relaxation.</p>
+                <a href="destinations.html" class="btn btn-outline w-full pt-15">View Details</a>
+            </div>
+        </div>
+
+        <!-- Tokyo -->
+        <div class="item-card">
+            <div class="item-image">
+                <img src="https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg" alt="Japan">
+                <div class="tag">City</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Tokyo, Japan</h3>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.7</span>
+                    <span class="review-count">(3,891 reviews)</span>
+                </div>
+                <p class="item-desc">Where ancient traditions seamlessly meet modern technology and culture.</p>
+                <a href="destinations.html" class="btn btn-outline w-full pt-15">View Details</a>
+            </div>
+        </div>
+
+        <!-- Delhi -->
+        <div class="item-card">
+            <div class="item-image">
+                <img src="https://cdn.pixabay.com/photo/2020/02/02/17/24/travel-4813658_1280.jpg" alt="Delhi">
+                <div class="tag">Historic</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Delhi, India</h3>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.6</span>
+                    <span class="review-count">(9,123 reviews)</span>
+                </div>
+                <p class="item-desc">The Capital City offering rich history, vibrant culture, and mesmerizing architecture.</p>
+                <a href="destinations.html" class="btn btn-outline w-full pt-15">View Details</a>
+            </div>
+        </div>
+
+        <!-- Bali -->
+        <div class="item-card">
+            <div class="item-image">
+                <img src="https://images.pexels.com/photos/247671/pexels-photo-247671.jpeg" alt="Bali">
+                <div class="tag">Tropical</div>
+            </div>
+            <div class="item-content">
+                <h3 class="item-title">Bali, Indonesia</h3>
+                <div class="item-rating">
+                    <span class="star">★</span><span class="rating-num">4.8</span>
+                    <span class="review-count">(4,123 reviews)</span>
+                </div>
+                <p class="item-desc">A lush haven filled with stunning temples, beautiful beaches, and peace.</p>
+                <a href="destinations.html" class="btn btn-outline w-full pt-15">View Details</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="page-header" style="margin-top: 60px;">
+        <h2 class="page-title" style="font-size: 2.2rem;">Why Travel With Us?</h2>
+        <p class="page-subtitle">We bring you the absolute best in hospitality and adventure.</p>
+    </section>
+
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin-bottom: 80px;">
+        <!-- Feature 1 -->
+        <div class="item-card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🌍</div>
+            <h3 style="color: #fff; margin-bottom: 10px;">Global Reach</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Access to over 100+ exclusive destinations worldwide.</p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="item-card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🔒</div>
+            <h3 style="color: #fff; margin-bottom: 10px;">Secure Bookings</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Encrypted payment gateways and instant confirmations.</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="item-card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">💎</div>
+            <h3 style="color: #fff; margin-bottom: 10px;">Premium Support</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">24/7 dedicated customer service for your peace of mind.</p>
+        </div>
+    </div>
+
+    <!-- Testimonial Section -->
+    <div style="background: rgba(0, 212, 255, 0.05); padding: 80px 20px; text-align: center; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);">
+        <h2 style="font-size: 2rem; font-family: 'Outfit', sans-serif; color: #fff; margin-bottom: 40px;">What Our Travelers Say</h2>
+        <div style="max-width: 800px; margin: 0 auto; background: var(--glass-bg); padding: 40px; border-radius: 24px; box-shadow: var(--card-shadow); border: 1px solid var(--glass-border);">
+            <div style="color: #FFD700; font-size: 1.5rem; margin-bottom: 15px;">★★★★★</div>
+            <p style="font-size: 1.2rem; font-style: italic; color: #fff; line-height: 1.6; margin-bottom: 20px;">"Booking our honeymoon to the Maldives through TravelX Hub was the best decision we made. The seamless hotel integrations and automated itineraries meant zero stress. Simply incredible!"</p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100" alt="Reviewer" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                <div style="text-align: left;">
+                    <div style="color: var(--primary); font-weight: bold;">Emma Roberts</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Traveled to Maldives</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Section -->
+    <div style="max-width: 600px; margin: 80px auto; text-align: center; padding: 0 20px;">
+        <h2 style="font-size: 2rem; font-family: 'Outfit', sans-serif; color: #fff; margin-bottom: 15px;">Join Our Newsletter</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Get updates on new destination releases and exclusive travel discounts directly to your inbox.</p>
+        <div style="display: flex; gap: 10px;">
+            <input type="email" placeholder="Your email address" style="flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); color: white; outline: none;">
+            <button class="btn btn-primary" style="padding: 15px 30px;" onclick="alert('Subscribed successfully!')">Subscribe</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Travel<span>X</span> Hub</div>
+        <p>© 2026 TravelX Hub | All Rights Reserved</p>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
