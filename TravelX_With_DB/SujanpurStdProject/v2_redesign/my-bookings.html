@@ -69,6 +69,28 @@
             border: 1px solid rgba(239, 68, 68, 0.45);
         }
 
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .cancel-btn {
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.12);
+            color: #fecaca;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cancel-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .booking-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -234,8 +256,41 @@
                             <span class="booking-value">${formatDate(booking.created_at)}</span>
                         </div>
                     </div>
+
+                    <div class="booking-actions">
+                        ${booking.status === 'cancelled'
+                            ? '<span class="status-pill status-cancelled">Cancelled</span>'
+                            : `<button class="cancel-btn" data-booking-id="${booking.id}">Cancel Booking</button>`}
+                    </div>
                 </article>
             `).join('');
+
+            list.querySelectorAll('button[data-booking-id]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    if (!confirm('Cancel this booking?')) return;
+
+                    button.disabled = true;
+                    try {
+                        const token = localStorage.getItem('token');
+                        const response = await fetch(`${API_BASE_URL}/bookings/${button.dataset.bookingId}/cancel`, {
+                            method: 'PATCH',
+                            credentials: 'include',
+                            headers: token ? { Authorization: `Bearer ${token}` } : {},
+                        });
+
+                        const data = await response.json();
+                        if (!response.ok || !data.success) {
+                            throw new Error(data.message || 'Failed to cancel booking');
+                        }
+
+                        await loadBookings();
+                    } catch (error) {
+                        alert(error.message);
+                    } finally {
+                        button.disabled = false;
+                    }
+                });
+            });
         }
 
         async function loadBookings() {

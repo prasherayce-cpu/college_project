@@ -102,6 +102,118 @@
       cursor: not-allowed;
     }
 
+    .action-btn {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: transparent;
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 600;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .action-btn-danger:hover {
+      border-color: #fb7185;
+      color: #fb7185;
+    }
+
+    .action-btn-primary:hover {
+      border-color: #60a5fa;
+      color: #60a5fa;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.6);
+      color: #fff;
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .primary-btn {
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .secondary-btn {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: transparent;
+      color: #fff;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .badge-pending {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      border-color: rgba(251, 191, 36, 0.35);
+    }
+
+    .badge-confirmed {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-cancelled {
+      color: #fb7185;
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+
     .muted {
       color: var(--text-muted);
       font-size: 0.9rem;
@@ -113,6 +225,71 @@
 
     .admin-header h1 {
       margin-bottom: 8px;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 0;
+      flex-wrap: wrap;
+    }
+
+    .tabs-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 24px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .tabs-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .inline-add-btn {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(15, 23, 42, 0.45);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .inline-add-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .admin-tab {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.45);
+      color: #e5e7eb;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .admin-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .admin-panel {
+      display: none;
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    .admin-card.hidden {
+      display: none;
     }
   </style>
 </head>
@@ -134,48 +311,113 @@
       <p class="page-subtitle">Manage bookings and control active destinations for users.</p>
     </div>
 
+    <div class="tabs-row">
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button type="button" class="admin-tab active" id="destinationsTabBtn">Destinations</button>
+        <button type="button" class="admin-tab" id="bookingsTabBtn">Booking</button>
+      </div>
+      <div class="tabs-actions">
+        <button type="button" class="inline-add-btn" id="openAddDestinationBtn">+ Add Destination</button>
+      </div>
+    </div>
+
     <div class="admin-grid">
-      <section class="admin-card">
-        <h2>Destination Visibility</h2>
-        <div class="admin-body">
-          <p class="muted" style="margin-top: 0;">Only active destinations appear on the destination page.</p>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="destinationsTableBody">
-              <tr><td colspan="6" class="muted">Loading destinations...</td></tr>
-            </tbody>
-          </table>
+      <section class="admin-panel active" id="destinationsPanel">
+        <div class="admin-card">
+          <h2>Destination List</h2>
+          <div class="admin-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="destinationsTableBody">
+                <tr><td colspan="6" class="muted">Loading destinations...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-card hidden" id="destinationFormCard" style="margin-top: 24px;">
+          <h2 id="destinationFormTitle">Add Destination</h2>
+          <div class="admin-body">
+            <form id="destinationForm">
+              <input type="hidden" id="destinationId">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="destinationKey">Destination Key</label>
+                  <input id="destinationKey" type="text" placeholder="maldives">
+                </div>
+                <div class="form-group">
+                  <label for="destinationName">Name</label>
+                  <input id="destinationName" type="text" placeholder="Maldives">
+                </div>
+                <div class="form-group">
+                  <label for="destinationLocation">Location</label>
+                  <input id="destinationLocation" type="text" placeholder="Maldives, Indian Ocean">
+                </div>
+                <div class="form-group">
+                  <label for="destinationPrice">Price</label>
+                  <input id="destinationPrice" type="number" min="0" step="0.01" placeholder="499.99">
+                </div>
+                <div class="form-group">
+                  <label for="destinationRating">Rating</label>
+                  <input id="destinationRating" type="number" min="0" max="5" step="0.1" placeholder="4.8">
+                </div>
+                <div class="form-group">
+                  <label for="destinationImageUrl">Image URL</label>
+                  <input id="destinationImageUrl" type="url" placeholder="https://...">
+                </div>
+                <div class="form-group full">
+                  <label for="destinationDescription">Description</label>
+                  <textarea id="destinationDescription" placeholder="Describe the destination"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="destinationIsActive">Status</label>
+                  <select id="destinationIsActive">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn" id="destinationSubmitBtn">Save Destination</button>
+                <button type="button" class="secondary-btn" id="destinationResetBtn">Reset</button>
+                <button type="button" class="secondary-btn" id="destinationCloseBtn">Close</button>
+              </div>
+            </form>
+          </div>
         </div>
       </section>
 
-      <section class="admin-card">
-        <h2>All Bookings</h2>
-        <div class="admin-body">
-          <table>
-            <thead>
-              <tr>
-                <th>Booking ID</th>
-                <th>User</th>
-                <th>Destination</th>
-                <th>Dates</th>
-                <th>People</th>
-                <th>Total</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="bookingsTableBody">
-              <tr><td colspan="7" class="muted">Loading bookings...</td></tr>
-            </tbody>
-          </table>
+      <section class="admin-panel" id="bookingsPanel">
+        <div class="admin-card">
+          <h2>All Bookings</h2>
+          <div class="admin-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>User</th>
+                  <th>Destination</th>
+                  <th>Dates</th>
+                  <th>People</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <tr><td colspan="8" class="muted">Loading bookings...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </div>
@@ -223,8 +465,68 @@
       return `₹${Number(value || 0).toLocaleString('en-IN')}`;
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function slugify(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function setDestinationForm(destination = null) {
+      const normalizedIsActive =
+        destination && destination.isActive !== undefined
+          ? (destination.isActive === true || destination.isActive === 1 || destination.isActive === '1' || destination.isActive === 'true')
+          : true;
+
+      document.getElementById('destinationId').value = destination?.id || '';
+      document.getElementById('destinationKey').value = destination?.destinationKey || '';
+      document.getElementById('destinationName').value = destination?.name || '';
+      document.getElementById('destinationLocation').value = destination?.location || '';
+      document.getElementById('destinationPrice').value = destination?.price ?? '';
+      document.getElementById('destinationRating').value = destination?.rating ?? '';
+      document.getElementById('destinationImageUrl').value = destination?.imageUrl || '';
+      document.getElementById('destinationDescription').value = destination?.description || '';
+      document.getElementById('destinationIsActive').value = normalizedIsActive ? 'true' : 'false';
+      document.getElementById('destinationFormTitle').textContent = destination ? 'Edit Destination' : 'Add Destination';
+      document.getElementById('destinationSubmitBtn').textContent = destination ? 'Update Destination' : 'Save Destination';
+    }
+
+    function resetDestinationForm() {
+      setDestinationForm(null);
+    }
+
+    function openDestinationForm(destination = null) {
+      setDestinationForm(destination);
+      const formCard = document.getElementById('destinationFormCard');
+      formCard.classList.remove('hidden');
+
+      requestAnimationFrame(() => {
+        formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    function closeDestinationForm() {
+      resetDestinationForm();
+      document.getElementById('destinationFormCard').classList.add('hidden');
+    }
+
+    let destinationsCache = [];
+
     async function loadDestinationsForAdmin() {
       const body = document.getElementById('destinationsTableBody');
+      if (!body) {
+        return;
+      }
       try {
         const response = await fetch(`${API_BASE_URL}/admin/destinations`, {
           method: 'GET',
@@ -237,6 +539,8 @@
           throw new Error(data.message || 'Failed to load destinations');
         }
 
+        destinationsCache = data.destinations;
+
         if (!data.destinations.length) {
           body.innerHTML = '<tr><td colspan="6" class="muted">No destinations found.</td></tr>';
           return;
@@ -245,8 +549,8 @@
         body.innerHTML = data.destinations.map((dest) => `
           <tr>
             <td>${dest.id}</td>
-            <td>${dest.name}</td>
-            <td>${dest.location}</td>
+            <td>${escapeHtml(dest.name)}</td>
+            <td>${escapeHtml(dest.location)}</td>
             <td>${formatCurrency(dest.price * 80)}</td>
             <td>
               <span class="badge ${dest.isActive ? 'badge-active' : 'badge-inactive'}">
@@ -254,14 +558,15 @@
               </span>
             </td>
             <td>
-              <button class="status-btn" onclick="toggleDestinationStatus(${dest.id}, ${!dest.isActive}, this)">
+              <button class="action-btn action-btn-primary" data-action="edit-destination" data-id="${dest.id}">Edit</button>
+              <button class="action-btn" data-action="toggle-destination" data-id="${dest.id}" data-active="${!dest.isActive}">
                 Mark ${dest.isActive ? 'Inactive' : 'Active'}
               </button>
             </td>
           </tr>
         `).join('');
       } catch (error) {
-        body.innerHTML = `<tr><td colspan="6" class="muted">${error.message}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="6" class="muted">${escapeHtml(error.message)}</td></tr>`;
       }
     }
 
@@ -280,24 +585,77 @@
         }
 
         if (!data.bookings.length) {
-          body.innerHTML = '<tr><td colspan="7" class="muted">No bookings found.</td></tr>';
+          body.innerHTML = '<tr><td colspan="8" class="muted">No bookings found.</td></tr>';
           return;
         }
 
         body.innerHTML = data.bookings.map((booking) => `
           <tr>
             <td>#${booking.id}</td>
-            <td>${booking.userName || booking.fullName}<br><small class="muted">${booking.userEmail || booking.email}</small></td>
-            <td>${booking.destination}</td>
-            <td>${booking.startDate?.slice(0, 10)} to ${booking.endDate?.slice(0, 10)}</td>
+            <td>${escapeHtml(booking.userName || booking.fullName)}<br><small class="muted">${escapeHtml(booking.userEmail || booking.email)}</small></td>
+            <td>${escapeHtml(booking.destination)}</td>
+            <td>${escapeHtml(booking.startDate?.slice(0, 10) || '')} to ${escapeHtml(booking.endDate?.slice(0, 10) || '')}</td>
             <td>${booking.numberOfPeople}</td>
             <td>${formatCurrency(booking.totalPrice)}</td>
-            <td>${booking.status}</td>
+            <td><span class="badge badge-${booking.status}">${booking.status}</span></td>
+            <td>
+              ${booking.status === 'cancelled'
+                ? '<span class="muted">No actions</span>'
+                : `<button class="action-btn action-btn-danger" data-action="cancel-booking" data-id="${booking.id}">Cancel Booking</button>`}
+            </td>
           </tr>
         `).join('');
       } catch (error) {
-        body.innerHTML = `<tr><td colspan="7" class="muted">${error.message}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="8" class="muted">${escapeHtml(error.message)}</td></tr>`;
       }
+    }
+
+    async function saveDestination(event) {
+      event.preventDefault();
+
+      const destinationId = document.getElementById('destinationId').value;
+      const name = document.getElementById('destinationName').value.trim();
+      const location = document.getElementById('destinationLocation').value.trim();
+      const priceValue = document.getElementById('destinationPrice').value;
+      const ratingValue = document.getElementById('destinationRating').value;
+      const payload = {
+        destinationKey: document.getElementById('destinationKey').value.trim() || slugify(name),
+        name,
+        location,
+        price: Number(priceValue),
+        rating: ratingValue === '' ? 0 : Number(ratingValue),
+        imageUrl: document.getElementById('destinationImageUrl').value.trim(),
+        description: document.getElementById('destinationDescription').value.trim(),
+        isActive: document.getElementById('destinationIsActive').value === 'true',
+      };
+
+      if (!payload.name || !payload.location || !priceValue) {
+        alert('Name, location, and price are required.');
+        return;
+      }
+
+      const endpoint = destinationId
+        ? `${API_BASE_URL}/admin/destinations/${destinationId}`
+        : `${API_BASE_URL}/admin/destinations`;
+      const method = destinationId ? 'PATCH' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method,
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getTokenHeaders(),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to save destination');
+      }
+
+      closeDestinationForm();
+      await loadDestinationsForAdmin();
     }
 
     async function toggleDestinationStatus(destinationId, isActive, buttonEl) {
@@ -326,6 +684,95 @@
       }
     }
 
+    async function cancelBooking(bookingId, buttonEl) {
+      if (!confirm('Cancel this booking?')) return;
+
+      buttonEl.disabled = true;
+      try {
+        const response = await fetch(`${API_BASE_URL}/admin/bookings/${bookingId}/cancel`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: getTokenHeaders(),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to cancel booking');
+        }
+
+        await loadBookingsForAdmin();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        buttonEl.disabled = false;
+      }
+    }
+
+    document.getElementById('destinationForm').addEventListener('submit', (event) => {
+      saveDestination(event).catch((error) => alert(error.message));
+    });
+
+    document.getElementById('destinationResetBtn').addEventListener('click', resetDestinationForm);
+    document.getElementById('destinationCloseBtn').addEventListener('click', closeDestinationForm);
+    document.getElementById('openAddDestinationBtn').addEventListener('click', () => openDestinationForm(null));
+
+    const destinationsTableBody = document.getElementById('destinationsTableBody');
+    if (destinationsTableBody) {
+      destinationsTableBody.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+
+        const action = button.dataset.action;
+        const destinationId = Number(button.dataset.id);
+
+        if (action === 'toggle-destination') {
+          toggleDestinationStatus(destinationId, button.dataset.active === 'true', button);
+        }
+      });
+    }
+
+    document.getElementById('bookingsTableBody').addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-action="cancel-booking"]');
+      if (!button) return;
+
+      cancelBooking(Number(button.dataset.id), button);
+    });
+
+    function activateAdminTab(tabName) {
+      const destinationsPanel = document.getElementById('destinationsPanel');
+      const bookingsPanel = document.getElementById('bookingsPanel');
+      const destinationsTabBtn = document.getElementById('destinationsTabBtn');
+      const bookingsTabBtn = document.getElementById('bookingsTabBtn');
+
+      const showDestinations = tabName === 'destinations';
+      destinationsPanel.classList.toggle('active', showDestinations);
+      bookingsPanel.classList.toggle('active', !showDestinations);
+      destinationsTabBtn.classList.toggle('active', showDestinations);
+      bookingsTabBtn.classList.toggle('active', !showDestinations);
+      document.getElementById('openAddDestinationBtn').style.display = showDestinations ? 'inline-flex' : 'none';
+    }
+
+    document.getElementById('destinationsTabBtn').addEventListener('click', () => activateAdminTab('destinations'));
+    document.getElementById('bookingsTabBtn').addEventListener('click', () => activateAdminTab('bookings'));
+
+    if (destinationsTableBody) {
+      destinationsTableBody.addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-action="edit-destination"]');
+        if (!button) return;
+
+        try {
+          const destination = destinationsCache.find((item) => Number(item.id) === Number(button.dataset.id));
+          if (!destination) {
+            throw new Error('Destination not found');
+          }
+
+          openDestinationForm(destination);
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+    }
+
     (async function initAdminPanel() {
       const allowed = await ensureAdmin();
       if (!allowed) return;
@@ -334,6 +781,8 @@
         loadDestinationsForAdmin(),
         loadBookingsForAdmin(),
       ]);
+
+      closeDestinationForm();
     })();
   </script>
 </body>
